@@ -1,0 +1,12 @@
+[2024-01-13 10:37:27] [ERROR   ] discord_bot: Erro ao carregar as extensões general
+ExtensionFailed: Extension 'cogs.general' raised an error: NameError: name 'a' is not defined
+[2024-01-13 10:37:27] [INFO    ] discord_bot: Extensão 'fun' carregada
+[2024-01-13 10:37:28] [INFO    ] discord_bot: Extensão 'utilities' carregada
+[2024-01-13 10:37:28] [INFO    ] discord_bot: Configuração 'errorhandler' carregada
+[2024-01-13 10:37:28] [INFO    ] discord_bot: Configuração 'configuration' carregada
+[2024-01-13 10:37:32] [INFO    ] discord_bot: Logado como Lion BOT
+[2024-01-13 10:37:32] [INFO    ] discord_bot: Versão do discord.py: 2.4.0a
+[2024-01-13 10:37:32] [INFO    ] discord_bot: Versão do Python: 3.10.12
+[2024-01-13 10:37:32] [INFO    ] discord_bot: Rodando em: Linux 6.5.0-14-generic (posix)
+[2024-01-13 10:37:32] [INFO    ] discord_bot: ------------------------------------------
+[2024-01-13 10:37:32] [INFO    ] discord_bot: Sincronizando comandos globalmente...
