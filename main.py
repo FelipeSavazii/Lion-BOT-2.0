@@ -1,12 +1,14 @@
 import asyncio
 import platform, os
 import logging, random
+from dotenv import load_dotenv
 
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Bot
 
-from functions.loggingformatter import LoggingFormatter, logger
+from modules.loggingformatter import LoggingFormatter, logger
+# from cogs.general import Ajuda
 
 intents = discord.Intents.default()
 intents.presences = True
@@ -20,6 +22,9 @@ bot = Bot(
 )
 bot.logger = logger
 
+load_dotenv()
+token = os.getenv("TOKEN")
+
 @bot.event
 async def on_ready():
     bot.logger.info(f"Logado como {bot.user.name}")
@@ -30,6 +35,10 @@ async def on_ready():
     bot.logger.info("Sincronizando comandos globalmente...")
     await bot.tree.sync()
     statuses.start()
+
+# @bot.event
+# async def setup_hook():
+#    bot.add_view(TESTE())
 
 @bot.event
 async def on_message(message):
@@ -77,4 +86,4 @@ async def cogs():
                 bot.logger.error(f"Erro ao carregar as configurações {extension}\n{exception}")
 
 asyncio.run(cogs())
-bot.run(token="MTE4NzgyNDg0Mjg0Njc4MTU2MA.Gt3P_c.kYbtc9vg2rUGolR31Jia6VawNwnCU9_WG7uyns")
+bot.run(token=token)

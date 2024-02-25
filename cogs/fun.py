@@ -5,7 +5,6 @@ from datetime import datetime
 import asyncio
 import random
 
-# JOKENPO CLASS
 class Jokenpo(discord.ui.Select):
     def __init__(self, interaction, bot):
         self.interaction = interaction

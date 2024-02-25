@@ -4,9 +4,19 @@ from discord.ext import commands
 from datetime import datetime
 import asyncio
 import aiohttp
-from urllib.parse import quote
+from PIL import Image
+from io import BytesIO
+import os
 
-TOKEN = "cf357b1c5a39cd0af418007663f9ada3"
+async def GenImage(url):
+  async with aiohttp.ClientSession() as session:
+    async with session.get(url) as response:
+        response.raise_for_status()
+
+        data = await response.read()
+        img = Image.open(BytesIO(data))
+      
+        return img
 
 class Utilities(commands.Cog, name="utilities"):
     def __init__(self, bot):
@@ -14,6 +24,7 @@ class Utilities(commands.Cog, name="utilities"):
 
     usuário = app_commands.Group(name="usuário", description="Veja as informações de um usuário.")
     servidor = app_commands.Group(name="servidor", description="Veja as informações de um servidor.")
+    pesquisar = app_commands.Group(name="pesquisar", description="Pesquise em sites famosos.")
 
     @usuário.command(
         name="avatar",
@@ -275,55 +286,89 @@ class Utilities(commands.Cog, name="utilities"):
             embed.set_image(url=servidor.banner.url)
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(
-        name="contador",
-        description="Ative um contador (em segundos).",
-    )
-    async def contador(self, interaction: discord.Interaction, tempo: int):
-        embed = discord.Embed(
-            description=f"Iniciando a contagem...",
-            color=0x7900ff,
-        )
-        embed.set_footer(text=f"Executado por {interaction.user.display_name}.")
-        embed.set_author(name="Contador - Lion BOT", icon_url=self.bot.user.avatar.url)
-        await interaction.response.send_message(embed=embed)
-        await asyncio.sleep(1.0)
-        for i in range(0, tempo):
-            embed.description=f"{tempo-i}..."
-            await interaction.edit_original_response(embed=embed)
-            await asyncio.sleep(1.0)
-        embed.description=f"Contador encerrado."
-        await interaction.edit_original_response(embed=embed)
-
-    @app_commands.command(
+    @pesquisar.command(
       name="wiki",
       description="Pesquise algo na Wikipédia.",
     )
     async def wiki(self, interaction: discord.Interaction, pesquisa: str):
+      await interaction.response.defer()
+      
+      link = f"https://pt.wikipedia.org/w/index.php?search={pesquisa.replace(' ', '+')}&title=Especial%3APesquisar&ns0=1"
+      url = f"https://image.thum.io/get/{link}"
+
+      img = await GenImage(url)
+      img.save(f'./media/wiki/{interaction.user.id}.png')
+
       embed = discord.Embed(
-        description=f"Aguarde...",
+        description=f"['{pesquisa}' na Wikipédia]({link})",
         color=0x7900ff,
       )
       embed.set_footer(text=f"Executado por {interaction.user.display_name}.")
-      embed.set_author(name="Ping - Lion BOT", icon_url=self.bot.user.avatar.url)
-      await interaction.response.send_message(embed=embed)
-      
-      link = f"https://pt.wikipedia.org/w/index.php?search={pesquisa.replace(' ', '+')}&title=Especial%3APesquisar&ns0=1"
-      encoded_link = quote(link, safe=':/?=&')
-      url = f"https://api.screenshotapi.io/capture?token={TOKEN}&url={encoded_link}"
-      print(url)
-      print(link)
-      print(endocoded_link)
-      
-      async with aiohttp.ClientSession() as session:
-          async with session.get(url) as response:
-              response.raise_for_status()
+      embed.set_author(name="Pesquisar na Wikipédia - Lion BOT", icon_url=self.bot.user.avatar.url)
+      try:
+        file = discord.File(f"./media/wiki/{interaction.user.id}.png", filename="image.png")
+        embed.set_image(url="attachment://image.png")
+        await interaction.followup.send(file=file, embed=embed)
+      except:
+        await interaction.followup.send(embed=embed)
 
-              data = await response.read()
-              print(data)
-        
-      embed.description=f"['{pesquisa}' na Wikipédia]({link})"
-      await interaction.edit_original_response(embed=embed)
+      os.remove(f"./media/wiki/{interaction.user.id}.png")
+
+    @pesquisar.command(
+      name="google",
+      description="Pesquise algo no Google.",
+    )
+    async def google(self, interaction: discord.Interaction, pesquisa: str):
+      await interaction.response.defer()
+    
+      link = f"https://www.google.com/search?client=&q={pesquisa.replace(' ', '+')}&sourceid=&ie=UTF-8&oe=UTF-8"
+      url = f"https://image.thum.io/get/{link}"
+    
+      img = await GenImage(url)
+      img.save(f'./media/google/{interaction.user.id}.png')
+    
+      embed = discord.Embed(
+        description=f"['{pesquisa}' no Google]({link})",
+        color=0x7900ff,
+      )
+      embed.set_footer(text=f"Executado por {interaction.user.display_name}.")
+      embed.set_author(name="Pesquisar no Google - Lion BOT", icon_url=self.bot.user.avatar.url)
+      try:
+        file = discord.File(f"./media/google/{interaction.user.id}.png", filename="image.png")
+        embed.set_image(url="attachment://image.png")
+        await interaction.followup.send(file=file, embed=embed)
+      except:
+        await interaction.followup.send(embed=embed)
+      
+      os.remove(f"./media/google/{interaction.user.id}.png")
+
+    @pesquisar.command(
+      name="youtube",
+      description="Pesquise algo no YouTube.",
+    )
+    async def youtube(self, interaction: discord.Interaction, pesquisa: str):
+      await interaction.response.defer()
+    
+      link = f"https://www.youtube.com/results?search_query={pesquisa.replace(' ', '+')}"
+      url = f"https://image.thum.io/get/{link}"
+    
+      img = await GenImage(url)
+      img.save(f'./media/youtube/{interaction.user.id}.png')
+    
+      embed = discord.Embed(
+        description=f"['{pesquisa}' no YouTube]({link})",
+        color=0x7900ff,
+      )
+      embed.set_footer(text=f"Executado por {interaction.user.display_name}.")
+      embed.set_author(name="Pesquisar no YouTube - Lion BOT", icon_url=self.bot.user.avatar.url)
+      try:
+        file = discord.File(f"./media/youtube/{interaction.user.id}.png", filename="image.png")
+        embed.set_image(url="attachment://image.png")
+        await interaction.followup.send(file=file, embed=embed)
+      except:
+        await interaction.followup.send(embed=embed)
+    
+      os.remove(f"./media/youtube/{interaction.user.id}.png")
 
 async def setup(bot):
     await bot.add_cog(Utilities(bot))
